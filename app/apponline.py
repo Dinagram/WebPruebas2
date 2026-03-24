@@ -8,12 +8,12 @@ from sqlalchemy import func, and_, case
 from flask import Flask, render_template, request, redirect, url_for, flash, abort, jsonify, send_from_directory
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from extensions import db, login_manager
+from app.extensions import db, login_manager
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 import uuid
 
-from configOnline import ConfigOnline
+from app.configOnline import ConfigOnline
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -81,9 +81,9 @@ def validate_client_access(user, token):
     login_user(user)
     return True
 
-from models.ModelUserOnline import ModelUserOnline as ModelUser2
-from models.entities.UserOnline import UserOnline as User
-from models.PedidoOnline import PedidoOnline as Pedido, MarcasOnline as Marcas, TallasOnline as Tallas
+from app.models.ModelUserOnline import ModelUserOnline as ModelUser2
+from app.models.entities.UserOnline import UserOnline as User
+from app.models.PedidoOnline import PedidoOnline as Pedido, MarcasOnline as Marcas, TallasOnline as Tallas
 
 csrf = CSRFProtect(app)
 @login_manager_app.user_loader
