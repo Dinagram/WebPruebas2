@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetos Almacenados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: #00205B;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            width: max-content; /* La tabla se expande según su contenido */
+            min-width: 100%;    /* Pero nunca más pequeña que el contenedor */
+            table-layout: auto; /* Deja que las columnas se ajusten automáticamente */
+        }
+
+        .table-wrapper {
+            overflow-x: auto; /* permite scroll horizontal */
+            -webkit-overflow-scrolling: touch;
+        }
+
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #00205B;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], select {
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .hechos-total {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .hechos-total input {
+            width: 50%;
+        }
+
+        .fecha-col {
+            min-width: 170px;
+            font-size: 0.95em;
+        }
+
+        .estado-col select {
+            width: 100%;
+            min-width: 120px;
+        }
+
+        button {
+            background-color: #00205B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #000000;
+        }
+        .btn-alta {
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            background-color: #00205B;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+        }
+
+
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between; /* separa los botones a extremos */
+            margin-top: 15px; /* separa de la tabla */
+            align-items: center; /* alinea verticalmente */
+        }
+
+        .action-buttons button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: none;
+            background-color: rgb(0, 32, 91);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            height: 40px; /* misma altura para ambos */
+        }
+
+        .action-buttons button:hover {
+            background-color: #00205B;
+        }
+
+        /* Quitar float anterior */
+        #addRowBtn {
+            float: none;
+            margin-top: 0;
+        }
+        .filters-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            justify-content: flex-start; /* 👈 CLAVE */
+        }
+
+
+        .filters-container form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            align-items: flex-end;
+            font-size: 0.9rem; /* texto un poco más pequeño */
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 3px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 140px; /* tamaño controlado */
+        }
+
+        .filter-group select {
+            width: 150px;
+        }
+
+        .filter-group.buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .filter-group.buttons button {
+            padding: 4px 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-alta:hover {
+            background-color: #00205B;
+        }
+
+        .foto-mini {
+            max-width: 80px;
+            max-height: 80px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+
+        .foto-mini:hover {
+            transform: scale(1.05);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        .header {
+            position: fixed;        /* hace que el header quede fijo */
+            top: 0;                 /* siempre en la parte superior */
+            left: 0;
+            width: 100%;            /* ocupa todo el ancho de la pantalla */
+            display: flex;
+            justify-content: center; /* centra el h1 horizontalmente */
+            align-items: center;     /* centra verticalmente logo y h1 */
+            padding: 10px 0;
+            background-color: white; /* para que no se vea el contenido de abajo a través */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* sombra opcional */
+            z-index: 9999;          /* se asegura que quede encima de todo */
+        }
+
+        .header .logo {
+            height: 40px;           /* tamaño del logo */
+            width: auto;
+            position: absolute;     /* logo a la izquierda */
+            left: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0B1B4A;
+            margin: 0;
+            text-align: center;
+        }
+        .btn-info {
+        margin-left: 10px; /* separación respecto al botón Dar de Alta */
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        background-color: #0B1B4A; /* azul para diferenciarlo */
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px; /* igual que Dar de Alta */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-info:hover {
+        background-color: #0B1B4A;
+    }
+    .table-wrapper {
+        overflow-x: auto;     /* scroll horizontal */
+        overflow-y: auto;     /* scroll vertical */
+        max-height: 70vh;     /* altura máxima visible */
+        -webkit-overflow-scrolling: touch;
+    }
+    .btn-foto {
+        background-color: #0B1B4A;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 2px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-foto:hover {
+        background-color: #142c70;
+        transform: scale(1.05);
+    }
+
+    .btn-foto:active {
+        transform: scale(0.95);
+    }
+    .foto-actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+    }
+    .foto-input-hidden {
+        display: none;
+    }
+    .btn-info {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        background-color: #0B1B4A;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+    }
+
+    .buttons-right {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;   /* 🔥 ESTA LÍNEA ES LA CLAVE */
+    align-items: center;
+}
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Objetos y Estados Almacenados</h1>
+    </div>
+
+
+    <div class="filters-container">
+        <form id="formPedidos" action="/update_all/{{nombre}}" method="POST" enctype="multipart/form-data">
+            <div class="filter-group">
+                <label for="filter_articulo">Artículo:</label>
+                <input type="text" id="filter_articulo" name="filter_articulo" value="{{ request.args.get('filter_articulo', '') }}">
+            </div>
+            <div class="filter-group">
+                <label for="filter_idpedido">ID Pedido:</label>
+                <input type="text" id="filter_idpedido" name="filter_idpedido" value="{{ request.args.get('filter_idpedido', '') }}">
+            </div>
+            <div class="filter-group">
+                <label for="filter_transporte">Transporte:</label>
+                <input type="text" id="filter_transporte" name="filter_transporte" value="{{ request.args.get('filter_transporte', '') }}">
+            </div>
+            {% if nombre == 'Vaello' %}
+            <div class="filter-group">
+                <label for="filter_proveedor">Proveedor:</label>
+                <select id="filter_proveedor" name="filter_proveedor">
+                    <option value="">-- Todos --</option>
+                    {% for user in usuarios %}
+                        <option value="{{ user }}" {% if request.args.get('filter_proveedor') == user %}selected{% endif %}>{{ user }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="filter-group buttons">
+                <button type="submit">Filtrar</button>
+                <a href="{{ url_for('storage', nombre=nombre) }}"><button type="button">Limpiar</button></a>
+            </div>
+        </form>
+        <div class="buttons-right">
+            <a href="{{ url_for('add_tallas', nombre=nombre) }}" class="btn-info">
+                Añadir Tallas
+            </a>
+
+            <a href="{{ url_for('alta', nombre=nombre) }}" class="btn-alta">
+                Dar de Alta
+            </a>
+
+            <a href="{{ url_for('graficos', nombre=nombre) }}" class="btn-info" target="_blank">
+                Gráficos
+            </a>
+        </div>
+
+
+    </div>
+
+    <form id="updateAllForm" action="{{ url_for('update_all', nombre=nombre) }}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="table-wrapper">
+            <table id="tablaObjetos">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Pedido</th>
+                        <th>Proceso</th>
+                        <th>Nombre Proveedor</th>
+                        <th>Nombre Pedido</th>
+                        <th class="estado-col">Estado</th>
+                        <th>Hechos / Total</th>
+                        <th class="fecha-col">Fecha Alta</th>
+                        <th class="fecha-col">Fecha Actualización</th>
+                        <th class="fecha-col">Fecha Finalización</th>
+                        <th class="fecha-col">Fecha Recogida</th>
+                        <th>Cliente</th>
+                        <th>Talla</th>
+                        <th>Artículo</th>
+                        <th>Observaciones</th>
+                        <th>Foto Modelo</th>
+                        <th>Transporte</th>
+                        <th>Guardar</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbody">
+
+                {% for grupo in pedidos %}
+                {% set pedido = grupo.info %}
+                {% set tallas = grupo.tallas %}
+
+                {% for talla in tallas %}
+                <tr
+                    data-id="{{ talla.id }}"
+                    data-pedido="{{ pedido.id }}"
+                    data-original-idpedido="{{ pedido.idpedido }}"
+                    data-original-proceso="{{ pedido.proceso or '' }}"
+                    data-fechaalta="{{ pedido.fechaalta.isoformat() if pedido.fechaalta else '' }}"
+                    data-fechaactualizacion="{{ pedido.fechaactualizacion.isoformat() if pedido.fechaactualizacion else '' }}"
+                    class="fila-pedido">
+
+                {% if loop.first %}
+                <td rowspan="{{ tallas|length }}" class="shared-cell">{{ pedido.id }}</td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <input class="idpedido" type="text" name="idpedido_{{ pedido.id }}" value="{{ pedido.idpedido }}">
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <input class="proceso" type="text" name="proceso_{{ pedido.id }}" value="{{ pedido.proceso }}">
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <select class="proveedor" name="nombre_{{ pedido.id }}">
+                {% for user in usuarios %}
+                <option value="{{ user }}" {% if user == pedido.nombreproveedor %}selected{% endif %}>
+                {{ user }}
+                </option>
+                {% endfor %}
+                </select>
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <input class="nombrepedido" type="text" name="nombrePedido_{{ pedido.id }}" value="{{ pedido.nombrepedido }}">
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="estado-col shared-cell">
+                <select class="estado" name="estado_{{ pedido.id }}">
+                <option value="En curso" {% if pedido.estadopedido == 'En curso' %}selected{% endif %}>En curso</option>
+                <option value="Pendiente" {% if pedido.estadopedido == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="Finalizado" {% if pedido.estadopedido == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                </select>
+                </td>
+                {% endif %}
+
+                <td class="hechos-total">
+                <input type="hidden" name="group_leader_{{ talla.id }}" value="{{ pedido.id }}">
+                <input type="hidden" name="original_idpedido_{{ talla.id }}" value="{{ pedido.idpedido }}">
+                <input type="hidden" name="original_proceso_{{ talla.id }}" value="{{ pedido.proceso or '' }}">
+                <input class="numerohechos" type="number" name="numerohechos_{{ talla.id }}" value="{{ talla.numerohechos }}">
+                <input class="numerototal" type="number" name="numerototal_{{ talla.id }}" value="{{ talla.numerototal }}">
+                </td>
+
+                {% if loop.first %}
+                <td rowspan="{{ tallas|length }}" class="fecha-col shared-cell">
+                {{ pedido.fechaalta.strftime('%Y-%m-%d %H:%M:%S') if pedido.fechaalta else '—' }}
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="fecha-col shared-cell">
+                {{ pedido.fechaactualizacion.strftime('%Y-%m-%d %H:%M:%S') if pedido.fechaactualizacion else '—' }}
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <input class="fechafinalizacion" type="date" name="fechafinalizacion_{{ pedido.id }}" value="{{ pedido.fechafinalizacion }}">
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                <input class="fecharecogida" type="date" name="fecharecogida_{{ pedido.id }}" value="{{ pedido.fecharecogida }}">
+                </td>
+
+                <td rowspan="{{ tallas|length }}" class="shared-cell">
+                    <div style="display:flex; gap:5px;">
+
+                        <select class="cliente marca-select" name="cliente_{{ pedido.id }}">
+                            <option value="">-- Selecciona Marca --</option>
+
+                            {% for marca in marcas %}
+                                <option value="{{ marca.idmarca }}"
+                                    {% if marca.idmarca == pedido.cliente|int %}selected{% endif %}>
+                                    {{ marca.nombre }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+
+                        <button type="button" onclick="addTalla(this)">+</button>
+
+                    </div>
+                </td>
+                {% endif %}
+
+                <td>
+                <select class="talla-select" name="talla_{{ talla.id }}">
+                    <option value="">-- Selecciona Talla --</option>
+                    <option value="{{ talla.talla }}" selected>{{ talla.talla }}</option>
+                </select>
+                </td>
+
+                <td>
+                <input class="articulo" type="text" name="articulo_{{ talla.id }}" value="{{ talla.articulo }}">
+                </td>
+
+                <td>
+                <input class="observaciones" type="text" name="observaciones_{{ talla.id }}" value="{{ talla.observaciones }}">
+                </td>
+
+                <td>
+                <div class="foto-actions">
+                    <button type="button"
+                    class="btn-foto"
+                    title="Adjuntar foto"
+                    aria-label="Adjuntar foto"
+                    onclick="abrirSelectorArchivo('fotomodelo_{{ talla.id }}')">
+                    +
+                    </button>
+                    {% if talla.fotomodelo %}
+                    <button type="button"
+                    class="btn-foto"
+                    title="Ver foto"
+                    aria-label="Ver foto"
+                    onclick="abrirModal('{{ url_for('uploaded_file', filename=talla.fotomodelo) }}')">
+                    📷
+                    </button>
+                    {% endif %}
+                    <input id="fotomodelo_{{ talla.id }}" class="foto-input-hidden" type="file" name="fotomodelo_{{ talla.id }}" accept="image/*">
+                </div>
+                </td>
+
+                <td>
+                <input class="transporte" type="text" name="transporte_{{ talla.id }}" value="{{ talla.transporte }}">
+                </td>
+
+                <td>
+                <button type="button" class="guardarFila">💾</button>
+                </td>
+
+                </tr>
+            {% endfor %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+            
+    </div>
+
+        <div id="modalImagen" class="modal" onclick="cerrarModal()">
+            <img id="imagenGrande">
+        </div>
+
+        <div class="action-buttons">
+            <button type="submit">Actualizar Todos</button>
+            <button type="button" id="addRowBtn">Añadir Fila</button>
+        </div>
+    </form>
+
+    <p id="noItemsMessage" class="no-items" style="display: none;">No hay objetos almacenados.</p>
+</div>
+
+<script>
+    const usuarios = {{ usuarios | tojson }};
+    const marcas = {{ marcas | tojson }};  // <-- pasar las marcas a JS
+    const tbody = document.getElementById('tbody');
+    const addRowBtn = document.getElementById('addRowBtn');
+    let standaloneRowCounter = 0;
+
+    addRowBtn.addEventListener('click', function() {
+        const newRow = document.createElement('tr');
+        standaloneRowCounter += 1;
+        const photoInputId = `fotomodelo_new_${standaloneRowCounter}`;
+        newRow.classList.add('fila-pedido');
+        newRow.dataset.id = '';
+        newRow.dataset.pedido = `standalone-${standaloneRowCounter}`;
+        newRow.dataset.newStandalone = 'true';
+
+        const opcionesUsuarios = usuarios.map(u => `<option value="${u}">${u}</option>`).join('');
+        const opcionesMarcas = marcas.map(m => `<option value="${m.idmarca}">${m.nombre}</option>`).join('');
+
+        newRow.innerHTML = `
+            <td><input type="text" name="id_new" value="-" readonly></td>
+            <td><input class="idpedido" type="text" name="idPedido_new" placeholder="ID Pedido"></td>
+            <td><input class="proceso" type="text" name="proceso_new" placeholder="Proceso" value=""></td>
+            <td>
+                <select class="proveedor" name="nombre_new">
+                    ${opcionesUsuarios}
+                </select>
+            </td>
+            <td><input class="nombrepedido" type="text" name="nombrePedido_new"></td>
+            <td>
+                <select class="estado" name="estado_new">
+                    <option value="En curso">En curso</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+            </td>
+            <td class="hechos-total">
+                <input class="numerohechos" type="number" name="numerohechos_new" min="0" value="0">
+                <input class="numerototal" type="number" name="numerototal_new" min="1" value="1">
+            </td>
+            <td><input class="fechaalta-standalone" type="date" name="fechaAlta_new"></td>
+            <td><input class="fechaactualizacion-standalone" type="date" name="fechaActualizacion_new"></td>
+            <td><input class="fechafinalizacion" type="date" name="fechafinalizacion_new"></td>
+            <td><input class="fecharecogida" type="date" name="fecharecogida_new"></td>
+
+            <!-- 🔹 CAMBIO AQUÍ: Marca primero -->
+            <td>
+                <select class="cliente marca-select" name="cliente_new">
+                    <option value="">-- Selecciona Marca --</option>
+                    ${opcionesMarcas}
+                </select>
+            </td>
+
+            <!-- 🔹 Luego talla -->
+            <td>
+                <select class="talla-select" name="talla_new" data-pedido-id="new">
+                    <option value="">-- Selecciona Talla --</option>
+                </select>
+            </td>
+
+            <td><input class="articulo" type="text" name="articulo_new"></td>
+            <td><input class="observaciones" type="text" name="observaciones_new"></td>
+            <td>
+                <div class="foto-actions">
+                    <button type="button" class="btn-foto" title="Adjuntar foto" aria-label="Adjuntar foto" onclick="abrirSelectorArchivo('${photoInputId}')">+</button>
+                    <input id="${photoInputId}" class="foto-input-hidden" type="file" name="fotomodelo_new" accept="image/*">
+                </div>
+            </td>
+            <td><input class="transporte" type="text" name="transporte_new"></td>
+            <td><button type="button" class="guardarFila" title="Guardar fila" aria-label="Guardar fila">Guardar</button></td>
+        `;
+
+        tbody.appendChild(newRow);
+
+    });
+</script>
+
+<script>
+function abrirSelectorArchivo(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.click();
+    }
+}
+
+function abrirModal(src) {
+    const modal = document.getElementById("modalImagen");
+    const img = document.getElementById("imagenGrande");
+    img.src = src;
+    modal.style.display = "flex";
+}
+
+function cerrarModal() {
+    document.getElementById("modalImagen").style.display = "none";
+}
+</script>
+<script>
+function previewFoto(input, pedidoId) {
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const contenedor = document.getElementById(`ver_foto_${pedidoId}`);
+
+        contenedor.innerHTML = `
+            <button type="button"
+                    class="btn-foto"
+                    onclick="abrirModal('${e.target.result}')">
+                📷
+            </button>
+        `;
+    };
+
+    reader.readAsDataURL(file);
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const filasModificadas = new Set();
+    const form = document.querySelector("#updateAllForm");
+
+    function getFirstRowOfPedido(pedidoId) {
+        return document.querySelector(`tr[data-pedido="${pedidoId}"]`);
+    }
+
+    function getFieldValue(row, selector) {
+        const field = row ? row.querySelector(selector) : null;
+        return field ? field.value : "";
+    }
+
+    function getGroupRows(pedidoId) {
+        return document.querySelectorAll(`tr[data-pedido="${pedidoId}"]`);
+    }
+
+    function increaseSharedRowspan(pedidoId) {
+        const baseRow = getFirstRowOfPedido(pedidoId);
+        if (!baseRow) return;
+
+        baseRow.querySelectorAll(".shared-cell").forEach(cell => {
+            cell.rowSpan = (cell.rowSpan || 1) + 1;
+        });
+    }
+
+    function syncGroupedNewRows(pedidoId) {
+        const baseRow = getFirstRowOfPedido(pedidoId);
+        if (!baseRow) return;
+
+        const sharedValues = {
+            idPedido: getFieldValue(baseRow, ".idpedido"),
+            proceso: getFieldValue(baseRow, ".proceso"),
+            nombre: getFieldValue(baseRow, ".proveedor"),
+            nombrePedido: getFieldValue(baseRow, ".nombrepedido"),
+            estado: getFieldValue(baseRow, ".estado"),
+            fechaAlta: baseRow.dataset.fechaalta || "",
+            fechaActualizacion: baseRow.dataset.fechaactualizacion || "",
+            fechaFinalizacion: getFieldValue(baseRow, ".fechafinalizacion"),
+            fechaRecogida: getFieldValue(baseRow, ".fecharecogida"),
+            cliente: getFieldValue(baseRow, ".cliente")
+        };
+
+        document.querySelectorAll(`tr[data-pedido="${pedidoId}"][data-new-grouped="true"]`).forEach(row => {
+            row.dataset.idpedidoValue = sharedValues.idPedido;
+            row.dataset.procesoValue = sharedValues.proceso;
+            row.dataset.nombreValue = sharedValues.nombre;
+            row.dataset.nombrepedidoValue = sharedValues.nombrePedido;
+            row.dataset.estadoValue = sharedValues.estado;
+            row.dataset.fechaaltaValue = sharedValues.fechaAlta;
+            row.dataset.fechaactualizacionValue = sharedValues.fechaActualizacion;
+            row.dataset.fechafinalizacionValue = sharedValues.fechaFinalizacion;
+            row.dataset.fecharecogidaValue = sharedValues.fechaRecogida;
+            row.dataset.clienteValue = sharedValues.cliente;
+        });
+    }
+
+    function buildRowFormData(fila) {
+        const id = fila.dataset.id;
+        const pedidoId = fila.dataset.pedido;
+        const baseRow = getFirstRowOfPedido(pedidoId);
+        const formData = new FormData();
+
+        formData.append("pedido_group_id", pedidoId || "");
+        formData.append("idpedido", getFieldValue(baseRow, ".idpedido"));
+        formData.append("proceso", getFieldValue(baseRow, ".proceso"));
+        formData.append("original_idpedido", fila.dataset.originalIdpedido || "");
+        formData.append("original_proceso", fila.dataset.originalProceso || "");
+        formData.append("nombreproveedor", getFieldValue(baseRow, ".proveedor"));
+        formData.append("nombrepedido", getFieldValue(baseRow, ".nombrepedido"));
+        formData.append("estadopedido", getFieldValue(baseRow, ".estado"));
+        formData.append("fechafinalizacion", getFieldValue(baseRow, ".fechafinalizacion"));
+        formData.append("fecharecogida", getFieldValue(baseRow, ".fecharecogida"));
+        formData.append("cliente", getFieldValue(baseRow, ".cliente"));
+        formData.append("transporte", getFieldValue(baseRow, ".transporte"));
+        formData.append("numerohechos", getFieldValue(fila, ".numerohechos"));
+        formData.append("numerototal", getFieldValue(fila, ".numerototal"));
+        formData.append("talla", getFieldValue(fila, ".talla-select"));
+        formData.append("articulo", getFieldValue(fila, ".articulo"));
+        formData.append("observaciones", getFieldValue(fila, ".observaciones"));
+        formData.append("csrf_token", document.querySelector('input[name="csrf_token"]').value);
+
+        const fotoInput = fila.querySelector(`input[type="file"][name="fotomodelo_${id}"]`);
+        if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+            formData.append("fotomodelo", fotoInput.files[0]);
+        }
+
+        return { formData, id };
+    }
+
+    function buildNewRowFormData(fila) {
+        const formData = new FormData();
+
+        const isStandalone = fila.dataset.newStandalone === "true";
+
+        formData.append("idpedido", isStandalone ? getFieldValue(fila, ".idpedido") : (fila.dataset.idpedidoValue || ""));
+        formData.append("proceso", isStandalone ? getFieldValue(fila, ".proceso") : (fila.dataset.procesoValue || ""));
+        formData.append("nombreproveedor", isStandalone ? getFieldValue(fila, ".proveedor") : (fila.dataset.nombreValue || ""));
+        formData.append("nombrepedido", isStandalone ? getFieldValue(fila, ".nombrepedido") : (fila.dataset.nombrepedidoValue || ""));
+        formData.append("estadopedido", isStandalone ? getFieldValue(fila, ".estado") : (fila.dataset.estadoValue || ""));
+        formData.append("fechaalta", isStandalone ? getFieldValue(fila, ".fechaalta-standalone") : (fila.dataset.fechaaltaValue || ""));
+        formData.append("fechaactualizacion", isStandalone ? getFieldValue(fila, ".fechaactualizacion-standalone") : (fila.dataset.fechaactualizacionValue || ""));
+        formData.append("fechafinalizacion", isStandalone ? getFieldValue(fila, ".fechafinalizacion") : (fila.dataset.fechafinalizacionValue || ""));
+        formData.append("fecharecogida", isStandalone ? getFieldValue(fila, ".fecharecogida") : (fila.dataset.fecharecogidaValue || ""));
+        formData.append("cliente", isStandalone ? getFieldValue(fila, ".cliente") : (fila.dataset.clienteValue || ""));
+        formData.append("numerohechos", getFieldValue(fila, ".numerohechos"));
+        formData.append("numerototal", getFieldValue(fila, ".numerototal"));
+        formData.append("talla", getFieldValue(fila, ".talla-select"));
+        formData.append("articulo", getFieldValue(fila, ".articulo"));
+        formData.append("observaciones", getFieldValue(fila, ".observaciones"));
+        formData.append("transporte", getFieldValue(fila, ".transporte"));
+
+        const fotoInput = fila.querySelector('input[type="file"][name="fotomodelo_new"]');
+        if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+            formData.append("fotomodelo", fotoInput.files[0]);
+        }
+
+        formData.append("csrf_token", document.querySelector('input[name="csrf_token"]').value);
+
+        return formData;
+    }
+
+    function finalizeNewRow(fila, data) {
+        fila.dataset.id = String(data.id);
+        delete fila.dataset.newGrouped;
+        delete fila.dataset.newStandalone;
+
+        const campos = [
+            [".numerohechos", `numerohechos_${data.id}`],
+            [".numerototal", `numerototal_${data.id}`],
+            [".talla-select", `talla_${data.id}`],
+            [".articulo", `articulo_${data.id}`],
+            [".observaciones", `observaciones_${data.id}`],
+            [".transporte", `transporte_${data.id}`]
+        ];
+
+        campos.forEach(([selector, name]) => {
+            const campo = fila.querySelector(selector);
+            if (campo) {
+                campo.name = name;
+            }
+        });
+
+        const fotoInput = fila.querySelector('input[type="file"][name="fotomodelo_new"]');
+        if (fotoInput) {
+            fotoInput.name = `fotomodelo_${data.id}`;
+            fotoInput.value = "";
+            fotoInput.id = `fotomodelo_${data.id}`;
+        }
+
+        const celdaFoto = fotoInput ? fotoInput.closest("td") : null;
+        if (celdaFoto && data.fotomodelo) {
+            celdaFoto.innerHTML = `
+                <div class="foto-actions">
+                    <button type="button" class="btn-foto" title="Adjuntar foto" aria-label="Adjuntar foto" onclick="abrirSelectorArchivo('fotomodelo_${data.id}')">+</button>
+                    <button type="button" class="btn-foto" title="Ver foto" aria-label="Ver foto" onclick="abrirModal('/uploads/${data.fotomodelo.split('/').pop()}')">📷</button>
+                    <input id="fotomodelo_${data.id}" class="foto-input-hidden" type="file" name="fotomodelo_${data.id}" accept="image/*">
+                </div>
+            `;
+        } else if (celdaFoto) {
+            celdaFoto.innerHTML = `
+                <div class="foto-actions">
+                    <button type="button" class="btn-foto" title="Adjuntar foto" aria-label="Adjuntar foto" onclick="abrirSelectorArchivo('fotomodelo_${data.id}')">+</button>
+                    <input id="fotomodelo_${data.id}" class="foto-input-hidden" type="file" name="fotomodelo_${data.id}" accept="image/*">
+                </div>
+            `;
+        }
+
+        filasModificadas.delete("");
+    }
+
+    function updatePhotoCell(fila, id, fotoPath) {
+        const fotoInputActual = fila.querySelector(`input[type="file"][name="fotomodelo_${id}"], input[type="file"][name="fotomodelo_new"]`);
+        const celdaFoto = fotoInputActual ? fotoInputActual.closest("td") : null;
+        if (!celdaFoto) return;
+
+        const cameraButton = fotoPath
+            ? `<button type="button" class="btn-foto" title="Ver foto" aria-label="Ver foto" onclick="abrirModal('/uploads/${fotoPath.split('/').pop()}')">📷</button>`
+            : "";
+
+        celdaFoto.innerHTML = `
+            <div class="foto-actions">
+                <button type="button" class="btn-foto" title="Adjuntar foto" aria-label="Adjuntar foto" onclick="abrirSelectorArchivo('fotomodelo_${id}')">+</button>
+                ${cameraButton}
+                <input id="fotomodelo_${id}" class="foto-input-hidden" type="file" name="fotomodelo_${id}" accept="image/*">
+            </div>
+        `;
+    }
+
+    // ---------------------------
+    // DETECTAR CAMBIOS (delegación)
+    // ---------------------------
+    form.addEventListener("change", function(e){
+        const input = e.target;
+        if(input.tagName !== "INPUT" && input.tagName !== "SELECT") return;
+
+        const fila = input.closest(".fila-pedido");
+        if(!fila) return;
+
+        const idFila = fila.dataset.id;
+        const idPedido = fila.dataset.pedido;
+        filasModificadas.add(idFila);
+
+        fila.style.background = "#fff3cd";
+
+        // sincronizar campos comunes, excluyendo 'proceso'
+        const camposComunes = ["proveedor","nombrepedido","cliente","estado","transporte","fechafinalizacion","fecharecogida"];
+        
+        // ❌ Solo copiar si el input tiene clase que está en camposComunes
+        const claseComun = camposComunes.find(clase => input.classList.contains(clase));
+        if(claseComun){
+            const valor = input.value;
+            document.querySelectorAll(`tr[data-pedido="${idPedido}"]`).forEach(f => {
+                const campo = f.querySelector(`.${claseComun}`);
+                if(campo && campo !== input) campo.value = valor;
+            });
+            syncGroupedNewRows(idPedido);
+        }
+    });
+
+    form.addEventListener("click", function(e) {
+        const button = e.target.closest(".guardarFila");
+        if (!button) return;
+
+        e.preventDefault();
+
+        const fila = button.closest(".fila-pedido");
+        if (!fila) {
+            return;
+        }
+
+        if (!fila.dataset.id) {
+            syncGroupedNewRows(fila.dataset.pedido);
+
+            const formData = buildNewRowFormData(fila);
+
+            fetch(`/create_pedido`, {
+                method: "POST",
+                body: formData
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) {
+                    finalizeNewRow(fila, data);
+                    fila.style.background = "#d4edda";
+                    setTimeout(() => fila.style.background = "", 2000);
+                } else {
+                    alert("Error al crear");
+                }
+            })
+            .catch(() => {
+                alert("Error al crear");
+            });
+            return;
+        }
+
+        const { formData, id } = buildRowFormData(fila);
+
+        fetch(`/update_pedido/${id}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if(data.success){
+                updatePhotoCell(fila, id, data.fotomodelo);
+                fila.style.background = "#d4edda";
+                setTimeout(() => fila.style.background = "", 2000);
+                filasModificadas.delete(id);
+                const baseRow = getFirstRowOfPedido(fila.dataset.pedido);
+                const nuevoIdPedido = getFieldValue(baseRow, ".idpedido");
+                const nuevoProceso = getFieldValue(baseRow, ".proceso");
+                document.querySelectorAll(`tr[data-pedido="${fila.dataset.pedido}"]`).forEach(groupRow => {
+                    groupRow.dataset.originalIdpedido = nuevoIdPedido;
+                    groupRow.dataset.originalProceso = nuevoProceso;
+                });
+            } else {
+                alert("Error al guardar");
+            }
+        })
+        .catch(() => {
+            alert("Error al guardar");
+        });
+    });
+
+    // ---------------------------
+    // GUARDAR TODAS LAS FILAS MODIFICADAS
+    // ---------------------------
+    form.addEventListener("submit", function(e){
+        e.preventDefault();
+        const hayFilasNuevas = form.querySelectorAll('tr[data-new-grouped="true"]').length > 0;
+        if(filasModificadas.size === 0 && !hayFilasNuevas){
+            alert("No hay cambios");
+            return;
+        }
+
+        form.querySelectorAll('tr[data-new-grouped="true"]').forEach(row => {
+            syncGroupedNewRows(row.dataset.pedido);
+        });
+
+        const formData = new FormData(form);
+
+        fetch(form.action, { method: "POST", body: formData })
+            .then(resp => {
+                if(resp.ok){
+                    alert("Actualizado correctamente");
+                    location.reload();
+                }else{
+                    alert("Error al actualizar");
+                }
+            });
+    });
+
+    window.addTalla = function(btn) {
+        const fila = btn.closest("tr");
+        const pedidoId = fila.dataset.pedido;
+        const baseRow = getFirstRowOfPedido(pedidoId);
+        if (!baseRow) return;
+
+        const nuevaFila = document.createElement("tr");
+        const photoInputId = `fotomodelo_grouped_${pedidoId}_${Date.now()}`;
+        nuevaFila.classList.add("fila-pedido");
+        nuevaFila.dataset.pedido = pedidoId;
+        nuevaFila.dataset.id = "";
+        nuevaFila.dataset.newGrouped = "true";
+
+        nuevaFila.innerHTML = `
+            <td class="hechos-total">
+                <input class="numerohechos" type="number" name="numerohechos_new" min="0" value="">
+                <input class="numerototal" type="number" name="numerototal_new" min="1" value="">
+            </td>
+            <td>
+                <select class="talla-select" name="talla_new">
+                    <option value="">-- Selecciona Talla --</option>
+                </select>
+            </td>
+            <td><input class="articulo" type="text" name="articulo_new" value=""></td>
+            <td><input class="observaciones" type="text" name="observaciones_new" value=""></td>
+            <td>
+                <div class="foto-actions">
+                    <button type="button" class="btn-foto" title="Adjuntar foto" aria-label="Adjuntar foto" onclick="abrirSelectorArchivo('${photoInputId}')">+</button>
+                    <input id="${photoInputId}" class="foto-input-hidden" type="file" name="fotomodelo_new" accept="image/*">
+                </div>
+            </td>
+            <td><input class="transporte" type="text" name="transporte_new" value=""></td>
+            <td><button type="button" class="guardarFila" title="Guardar fila" aria-label="Guardar fila">Guardar</button></td>
+        `;
+
+        const filasPedido = getGroupRows(pedidoId);
+        filasPedido[filasPedido.length - 1].after(nuevaFila);
+
+        increaseSharedRowspan(pedidoId);
+        syncGroupedNewRows(pedidoId);
+
+        const marcaId = getFieldValue(baseRow, ".cliente");
+        if (marcaId) {
+            fetch(`/tallas/${marcaId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tallaSelect = nuevaFila.querySelector(".talla-select");
+                    tallaSelect.innerHTML = '<option value="">-- Selecciona Talla --</option>';
+
+                    data.forEach(t => {
+                        const option = document.createElement("option");
+                        option.value = t.talla;
+                        option.textContent = t.talla;
+                        tallaSelect.appendChild(option);
+                    });
+                });
+        }
+    };
+
+});
+</script>
+
+<script>
+function loadTallasForPedido(pedidoId, marcaId) {
+    const filasPedido = document.querySelectorAll(`tr[data-pedido="${pedidoId}"]`);
+
+    if(!marcaId){
+        filasPedido.forEach(f => {
+            const tallaSelect = f.querySelector(".talla-select");
+            if(tallaSelect){
+                const selectedValue = tallaSelect.value;
+                tallaSelect.innerHTML = '<option value="">-- Selecciona Talla --</option>';
+                tallaSelect.value = selectedValue || "";
+            }
+        });
+        return;
+    }
+
+    fetch(`/tallas/${marcaId}`)
+        .then(res => res.json())
+        .then(data => {
+            filasPedido.forEach(f => {
+                const tallaSelect = f.querySelector(".talla-select");
+                if(!tallaSelect) return;
+
+                const selectedValue = tallaSelect.value;
+                tallaSelect.innerHTML = '<option value="">-- Selecciona Talla --</option>';
+
+                data.forEach(t => {
+                    const option = document.createElement("option");
+                    option.value = t.talla;
+                    option.textContent = t.talla;
+                    if (t.talla === selectedValue) {
+                        option.selected = true;
+                    }
+                    tallaSelect.appendChild(option);
+                });
+            });
+        });
+}
+
+document.addEventListener("change", function(e){
+    if(!e.target.classList.contains("marca-select")) return;
+
+    const fila = e.target.closest("tr");
+    const pedidoId = fila.dataset.pedido;
+    loadTallasForPedido(pedidoId, e.target.value);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const initializedPedidos = new Set();
+
+    document.querySelectorAll(".marca-select").forEach(select => {
+        const fila = select.closest("tr");
+        if (!fila) return;
+
+        const pedidoId = fila.dataset.pedido;
+        if (!pedidoId || initializedPedidos.has(pedidoId)) return;
+
+        initializedPedidos.add(pedidoId);
+        loadTallasForPedido(pedidoId, select.value);
+    });
+});
+</script>
+
+<script>
+
+function legacyAddTalla(btn) {
+    const fila = btn.closest("tr");
+    const pedidoId = fila.dataset.pedido;
+
+    // Copiar sólo campos comunes que se quieren prellenar
+    const camposComunes = {
+        idpedido: fila.querySelector(".idpedido")?.value || "",
+        nombrepedido: fila.querySelector(".nombrepedido")?.value || "",
+        estado: fila.querySelector(".estado")?.value || "",
+        cliente: fila.querySelector(".cliente")?.value || "",
+        transporte: fila.querySelector(".transporte")?.value || "",
+    };
+
+    const nuevaFila = document.createElement("tr");
+    nuevaFila.classList.add("fila-pedido");
+    nuevaFila.dataset.pedido = pedidoId;
+    nuevaFila.dataset.id = ""; // Vacío para fila nueva
+
+    nuevaFila.innerHTML = `
+        <td><input class="idpedido" name="idpedido" value="${camposComunes.idpedido}"></td>
+        <td><input class="proceso" name="proceso" value=""></td>
+        <td><input class="proveedor" name="proveedor" value="${camposComunes.proveedor}"></td>
+        <td><input class="nombrepedido" name="nombrepedido" value="${camposComunes.nombrepedido}"></td>
+        <td>
+            <select class="estado" name="estado">
+                <option value="En curso" ${camposComunes.estado === 'En curso' ? 'selected' : ''}>En curso</option>
+                <option value="Pendiente" ${camposComunes.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                <option value="Finalizado" ${camposComunes.estado === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
+            </select>
+        </td>
+        <td><input class="numerohechos" type="number" name="numerohechos" value=""></td>
+        <td><input class="numerototal" type="number" name="numerototal" value=""></td>
+        <td><input class="fechafinalizacion" type="date" name="fechafinalizacion" value=""></td>
+        <td><input class="fecharecogida" type="date" name="fecharecogida" value=""></td>
+        <td><input class="cliente" name="cliente" value="${camposComunes.cliente}"></td>
+        <td><input class="talla" name="talla" value=""></td>
+        <td><input class="articulo" name="articulo" value=""></td>
+        <td><input class="observaciones" name="observaciones" value=""></td>
+        <td><input class="transporte" name="transporte" value="${camposComunes.transporte}"></td>
+        <td><button type="button" class="guardarFila">💾</button></td>
+    `;
+
+    // Insertar después de la última fila con el mismo pedidoId
+    const filasPedido = document.querySelectorAll(`tr[data-pedido="${pedidoId}"]`);
+    filasPedido[filasPedido.length - 1].after(nuevaFila);
+}
+</script>
+</body>
+</html>

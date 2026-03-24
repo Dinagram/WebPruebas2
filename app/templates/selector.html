@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Selector de Empresa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .title-box {
+            background-color: #534cafff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .empresa-card {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .empresa-card:hover {
+            transform: scale(1.02);
+        }
+
+        .empresa-info {
+            font-size: 18px;
+        }
+
+        .empresa-link {
+            text-decoration: none;
+            color: #534cafff;
+            font-weight: bold;
+        }
+
+        .btn-alta {
+            display: inline-block;
+            background-color: #534cafff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-alta:hover {
+            background-color: #4038a0;
+        }
+
+        .button-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-box">
+            <h2>Selecciona una empresa para ver sus pedidos</h2>
+        </div>
+
+        <div class="button-container">
+            <a href="{{ url_for('alta') }}" class="btn-alta">Alta Proveedor</a>
+        </div>
+
+        {% for empresa in empresas %}
+            <div class="empresa-card">
+                <div class="empresa-info">
+                    <a class="empresa-link" href="{{ url_for('storage', nombre=empresa.nombreproveedor) }}">
+                        {{ empresa.nombreproveedor }}
+                    </a>
+                    <div style="margin-top: 8px; font-size: 14px;">
+                        En curso: {{ empresa.en_curso }} |
+                        Pendientes: {{ empresa.pendientes }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
