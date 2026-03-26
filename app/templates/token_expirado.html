@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace caducado</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 520px;
+            width: 90%;
+            margin: 70px auto;
+            padding: 32px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.12);
+            text-align: center;
+        }
+
+        h1 {
+            color: #00205B;
+            margin-bottom: 16px;
+        }
+
+        p {
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .note {
+            font-weight: bold;
+            color: #00205B;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 24px auto;
+                padding: 24px 18px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enlace caducado</h1>
+        <p>El acceso para <strong>{{ nombre }}</strong> ya no esta disponible.</p>
+        <p class="note">Cada token del correo dura {{ max_age_minutes }} minutos.</p>
+        <p>Cuando se genera un nuevo correo se crea un token distinto y el anterior deja de ser valido.</p>
+    </div>
+</body>
+</html>
