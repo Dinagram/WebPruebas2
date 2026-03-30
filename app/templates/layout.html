@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es"> <!-- Declara el idioma del contenido -->
+<head>
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Hace que el sitio sea responsivo -->
+    <title>{% block title %}{% endblock %}</title> <!-- Título de la página que se ve en la pestaña del navegador -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+</head>
+<body>
+    {% block body %}
+    {% endblock %}
+    <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+    
+
+</body>
+</html>

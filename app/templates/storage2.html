@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetos Almacenados</title>
+    <style>
+        /* Estilos globales */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #28a745; /* Verde */
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Estilos para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Estilos para los inputs y selects */
+        input[type="text"], select, input[type="range"] {
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .slider:hover {
+            background: #28a745;
+        }
+
+        /* Estilos para los botones */
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Mensaje si no hay objetos almacenados */
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        /* Estilos para el botón de añadir fila */
+        #addRowBtn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #addRowBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: calc(100% - 24px);
+                margin-top: 20px;
+                padding: 16px;
+            }
+
+            table {
+                min-width: 720px;
+            }
+
+            #addRowBtn,
+            button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Objetos y Estados Almacenados</h1>
+
+    <form action="{{ url_for('update_all') }}" method="POST">
+        <div class="table-wrapper">
+        <table id="tablaObjetos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Proveedor</th>
+                    <th>Nombre Pedido</th> <!-- Columna nueva aquí -->
+                    <th>Estado</th>
+                    <th>Porcentaje de Trabajo</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {% for row in data %}
+                <tr>
+                    <td>{{ row[0] }}</td>  <!-- NumeroPedido -->
+                    <td>
+                        <input type="text" name="nombre_{{ row[0] }}" value="{{ row[1] }}" class="nombreProveedor">
+                    </td>  
+                    <td>
+                        <input type="text" name="nombrePedido_{{ row[0] }}" value="{{ row[2] }}" class="nombrePedido">
+                    </td> <!-- Columna NombrePedido -->
+                    <td>
+                        <select name="estado_{{ row[0] }}" value ="class="estadoSelect" data-id="{{ row[0] }}">
+                            <option value="En curso" {% if row[4] == 'En curso' %} selected {% endif %}>En curso</option>
+                            <option value="Pendiente" {% if row[4] == 'Pendiente' %} selected {% endif %}>Pendiente</option>
+                            <option value="Finalizado" {% if row[4] == 'Finalizado' %} selected {% endif %}>Finalizado</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="range" name="porcentaje_{{ row[0] }}" value="{{ row[5] }}" min="0" max="100" class="slider" data-id="{{ row[0] }}">
+                        <span>{{ row[5] }}%</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+        <button type="submit">Actualizar Todos</button>
+    </form>
+
+    <button id="addRowBtn">Añadir Fila</button>
+
+    <p id="noItemsMessage" class="no-items" style="display: none;">No hay objetos almacenados.</p>
+</div>
+
+<script>
+    // Función para actualizar el valor del porcentaje en la tabla
+    document.querySelectorAll('.slider').forEach(function(slider) {
+        slider.addEventListener('input', function() {
+            var value = this.value;
+            // Actualizar el texto del porcentaje en la tabla
+            this.nextElementSibling.textContent = value + '%';
+        });
+    });
+
+    // Función para agregar una nueva fila a la tabla
+    document.getElementById('addRowBtn').addEventListener('click', function() {
+        // Crear una nueva fila
+        const newRow = document.createElement('tr');
+        
+        // Crear las celdas para la nueva fila
+        const IDCell = document.createElement('td');
+        const IDInput = document.createElement('input');
+        IDInput.type = 'text';
+        IDInput.name = 'ID_new[]';  // Usar el nombre correcto para enviar un array
+        IDInput.value = ''; // Deja este campo vacío para que el usuario lo rellene
+        IDCell.appendChild(IDInput);
+
+        const nombreProveedorCell = document.createElement('td');
+        const nombreProveedorInput = document.createElement('input');
+        nombreProveedorInput.type = 'text';
+        nombreProveedorInput.name = 'nombre_new[]'; // Usar el nombre correcto para enviar un array
+        nombreProveedorInput.value = 'Zara'; // Valor por defecto "Dinagram"
+        nombreProveedorCell.appendChild(nombreProveedorInput);
+
+        const nombrePedidoCell = document.createElement('td');
+        const nombrePedidoInput = document.createElement('input');
+        nombrePedidoInput.type = 'text';
+        nombrePedidoInput.name = 'nombrePedido_new[]';  // Usar el nombre correcto para enviar un array
+        nombrePedidoInput.value = ''; // Deja este campo vacío para que el usuario lo rellene
+        nombrePedidoCell.appendChild(nombrePedidoInput);
+
+        const estadoCell = document.createElement('td');
+        const estadoSelect = document.createElement('select');
+        estadoSelect.name = 'estado_new[]'; // Usar el nombre correcto para enviar un array
+        const estados = ['En curso', 'Pendiente', 'Finalizado'];
+        estados.forEach(function(estado) {
+            const option = document.createElement('option');
+            option.value = estado;
+            option.textContent = estado;
+            estadoSelect.appendChild(option);
+        });
+        estadoCell.appendChild(estadoSelect);
+
+        const porcentajeCell = document.createElement('td');
+        const porcentajeInput = document.createElement('input');
+        porcentajeInput.type = 'range';
+        porcentajeInput.name = 'porcentaje_new[]'; // Usar el nombre correcto para enviar un array
+        porcentajeInput.value = 0; // Valor inicial del porcentaje
+        porcentajeInput.min = 0;
+        porcentajeInput.max = 100;
+        const porcentajeSpan = document.createElement('span');
+        porcentajeSpan.textContent = '0%';
+        porcentajeCell.appendChild(porcentajeInput);
+        porcentajeCell.appendChild(porcentajeSpan);
+
+        // Agregar las celdas a la fila
+        newRow.appendChild(IDCell);
+        newRow.appendChild(nombreProveedorCell);
+        newRow.appendChild(nombrePedidoCell);  // Nueva columna NombrePedido
+        newRow.appendChild(estadoCell);
+        newRow.appendChild(porcentajeCell);
+
+        // Agregar la nueva fila al cuerpo de la tabla
+        document.getElementById('tbody').appendChild(newRow);
+
+        // Añadir el evento para actualizar el porcentaje cuando se cambie el slider
+        porcentajeInput.addEventListener('input', function() {
+            porcentajeSpan.textContent = porcentajeInput.value + '%';
+        });
+    });
+</script>
+
+</body>
+</html>
+
+
+
+
+

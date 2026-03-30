@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Proveedor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #00205B;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #00205B;
+            color: white;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #00205B;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #00205B;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: calc(100% - 24px);
+                margin: 20px auto;
+                padding: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            input,
+            .btn {
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            th, td {
+                white-space: nowrap;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Usuarios del Sistema</h2>
+
+        <!-- ✅ Formulario para añadir nuevo usuario -->
+        <form action="{{ url_for('add_user') }}" method="POST" class="form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="username" placeholder="Nombre de usuario" required>
+            <input type="text" name="fullname" placeholder="Nombre completo">
+            <input type="email" name="email" placeholder="Correo electrónico">
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit" class="btn">Añadir usuario</button>
+        </form>
+
+        <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Email</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email or '-' }}</td>
+                <td>
+                    <button class="btn" style="background-color:#c0392b"
+                            onclick="eliminarUsuario({{ user.id }})">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+
+        <a href="{{ url_for('storage', nombre='Vaello')}}" class="btn">← Volver</a>
+    </div>
+</body>
+<script>
+function eliminarUsuario(id) {
+    if (!confirm("¿Seguro que quieres eliminar este usuario?")) return;
+
+    fetch(`/delete_user/${id}`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": document.querySelector('input[name="csrf_token"]').value
+        }
+    }).then(res => {
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert("Error al eliminar el usuario");
+        }
+    });
+}
+</script>
+</html>

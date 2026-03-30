@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de PDF en Correo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: #00205B;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px 12px;
+                padding: 18px;
+            }
+
+            a {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hola</h1>
+        <p>Te hemos enviado el documento en formato PDF. Puedes verlo haciendo clic en el siguiente enlace:</p>
+        <a href="file:///C:/Users/cesar/OneDrive/Factura%20profesional%20minimalista%20en%20color%20blanco%20y%20negro.pdf" target="_blank">
+            Ver el PDF
+        </a>
+    </div>
+</body>
+</html>
